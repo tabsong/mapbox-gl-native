@@ -2,11 +2,15 @@
 
 #include <mbgl/map/mode.hpp>
 #include <mbgl/map/transform_state.hpp>
-#include <mbgl/util/chrono.hpp>
+#include <mbgl/map/update.hpp>
 #include <mbgl/style/light.hpp>
 #include <mbgl/style/image.hpp>
 #include <mbgl/style/source.hpp>
 #include <mbgl/style/layer.hpp>
+#include <mbgl/util/chrono.hpp>
+#include <mbgl/util/immutable.hpp>
+
+#include <vector>
 
 namespace mbgl {
 
@@ -16,6 +20,8 @@ class AnnotationManager;
 
 class UpdateParameters {
 public:
+    const bool styleLoaded;
+    const Update update;
     const MapMode mode;
     const float pixelRatio;
     const MapDebugOptions debugOptions;
@@ -35,6 +41,9 @@ public:
     AnnotationManager& annotationManager;
 
     const uint8_t prefetchZoomDelta = 0;
+    
+    // For still image requests, render requested
+    const bool stillImageRequest;
 };
 
 } // namespace mbgl

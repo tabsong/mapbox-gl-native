@@ -24,6 +24,7 @@ class Backend;
 class View;
 class FileSource;
 class Scheduler;
+class RendererFrontend;
 
 namespace style {
 class Image;
@@ -32,29 +33,24 @@ class Style;
 
 class Map : private util::noncopyable {
 public:
-    explicit Map(Backend&,
+    explicit Map(RendererFrontend&,
                  MapObserver&,
                  Size size,
                  float pixelRatio,
                  FileSource&,
                  Scheduler&,
                  MapMode mapMode = MapMode::Continuous,
-                 GLContextMode contextMode = GLContextMode::Unique,
                  ConstrainMode constrainMode = ConstrainMode::HeightOnly,
-                 ViewportMode viewportMode = ViewportMode::Default,
-                 const optional<std::string>& programCacheDir = {});
+                 ViewportMode viewportMode = ViewportMode::Default);
     ~Map();
 
     // Register a callback that will get called (on the render thread) when all resources have
     // been loaded and a complete render occurs.
     using StillImageCallback = std::function<void (std::exception_ptr)>;
-    void renderStill(View&, StillImageCallback callback);
+    void renderStill(StillImageCallback callback);
 
     // Triggers a repaint.
     void triggerRepaint();
-
-    // Main render function.
-    void render(View&);
 
           style::Style& getStyle();
     const style::Style& getStyle() const;
@@ -165,9 +161,6 @@ public:
     // The default `delta` is 4.
     void setPrefetchZoomDelta(uint8_t delta);
     uint8_t getPrefetchZoomDelta() const;
-
-    // Memory
-    void onLowMemory();
 
     // Debug
     void setDebug(MapDebugOptions);
