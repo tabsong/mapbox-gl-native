@@ -3,15 +3,18 @@
 #include "node_feature.hpp"
 #include "node_conversion.hpp"
 #include "node_geojson.hpp"
+#include "node_renderer_frontend.hpp"
 
 #include <mbgl/gl/headless_display.hpp>
 #include <mbgl/util/exception.hpp>
+#include <mbgl/renderer/renderer.hpp>
 #include <mbgl/style/conversion/source.hpp>
 #include <mbgl/style/conversion/layer.hpp>
 #include <mbgl/style/conversion/filter.hpp>
 #include <mbgl/style/style.hpp>
 #include <mbgl/style/image.hpp>
 #include <mbgl/map/backend_scope.hpp>
+#include <mbgl/map/map_observer.hpp>
 #include <mbgl/map/query.hpp>
 #include <mbgl/util/premultiply.hpp>
 
@@ -397,7 +400,7 @@ void NodeMap::startRender(NodeMap::RenderOptions options) {
         map->setDebug(options.debugOptions);
     }
 
-    map->renderStill(*view, [this](const std::exception_ptr eptr) {
+    map->renderStill([this](const std::exception_ptr eptr) {
         if (eptr) {
             error = std::move(eptr);
             uv_async_send(async);
@@ -502,7 +505,7 @@ void NodeMap::release() {
     uv_close(reinterpret_cast<uv_handle_t *>(async), [] (uv_handle_t *h) {
         delete reinterpret_cast<uv_async_t *>(h);
     });
-
+    
     map.reset();
 }
 
@@ -529,9 +532,14 @@ void NodeMap::Cancel(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
 void NodeMap::cancel() {
     auto style = map->getStyle().getJSON();
+    
+    // Reset map explicitly as it resets the renderer frontend
+    map.reset();
 
-    map = std::make_unique<mbgl::Map>(backend, mapObserver, mbgl::Size{ 256, 256 },
-            pixelRatio, *this, threadpool, mbgl::MapMode::Still);
+    auto renderer = std::make_unique<mbgl::Renderer>(backend, pixelRatio, *this, threadpool, mbgl::MapMode::Still);
+    rendererFrontend = std::make_unique<NodeRendererFrontend>(std::move(renderer), [this] { return view.get(); });
+    map = std::make_unique<mbgl::Map>(*rendererFrontend, mapObserver, mbgl::Size{ 256, 256 }, pixelRatio,
+                                      *this, threadpool, mbgl::MapMode::Still);
 
     // FIXME: Reload the style after recreating the map. We need to find
     // a better way of canceling an ongoing rendering on the core level
@@ -885,6 +893,11 @@ void NodeMap::DumpDebugLogs(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     if (!nodeMap->map) return Nan::ThrowError(releasedMessage());
 
     nodeMap->map->dumpDebugLogs();
+    
+    if (nodeMap->rendererFrontend) {
+        nodeMap->rendererFrontend->dumpDebugLogs();
+    }
+    
     info.GetReturnValue().SetUndefined();
 }
 
@@ -981,11 +994,12 @@ NodeMap::NodeMap(v8::Local<v8::Object> options)
                            .ToLocalChecked()
                            ->NumberValue()
                      : 1.0;
-      }()),
-      mapObserver(NodeMapObserver()),
-      map(std::make_unique<mbgl::Map>(backend,
+      }())
+    , mapObserver(NodeMapObserver())
+    , rendererFrontend(std::make_unique<NodeRendererFrontend>(std::make_unique<mbgl::Renderer>(backend, pixelRatio, *this, threadpool, mbgl::MapMode::Still), [this] { return view.get(); }))
+    , map(std::make_unique<mbgl::Map>(*rendererFrontend,
                                       mapObserver,
-                                      mbgl::Size{ 256, 256 },
+                                      mbgl::Size { 256, 256 },
                                       pixelRatio,
                                       *this,
                                       threadpool,
