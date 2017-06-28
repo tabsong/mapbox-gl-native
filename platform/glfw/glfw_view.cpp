@@ -1,4 +1,5 @@
 #include "glfw_view.hpp"
+#include "glfw_renderer_frontend.hpp"
 #include "ny_route.hpp"
 
 #include <mbgl/annotation/annotation.hpp>
@@ -140,6 +141,10 @@ GLFWView::~GLFWView() {
 void GLFWView::setMap(mbgl::Map *map_) {
     map = map_;
     map->addAnnotationImage(makeImage("default_marker", 22, 22, 1));
+}
+
+void GLFWView::setRenderFrontend(GLFWRendererFrontend* rendererFrontend_) {
+    rendererFrontend = rendererFrontend_;
 }
 
 void GLFWView::updateAssumedState() {
@@ -489,7 +494,7 @@ void GLFWView::run() {
 
         glfwPollEvents();
 
-        if (dirty) {
+        if (dirty && rendererFrontend) {
             const double started = glfwGetTime();
 
             if (animateRouteCallback)
@@ -498,7 +503,7 @@ void GLFWView::run() {
             activate();
             mbgl::BackendScope scope { *this, mbgl::BackendScope::ScopeType::Implicit };
 
-            map->render(*this);
+            rendererFrontend->render();
 
             glfwSwapBuffers(window);
 
