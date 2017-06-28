@@ -28,6 +28,7 @@
 #include <mbgl/style/style.hpp>
 #include <mbgl/style/image.hpp>
 #include <mbgl/style/filter.hpp>
+#include <mbgl/renderer/renderer.hpp>
 
 // Java -> C++ conversion
 #include "style/android_conversion.hpp"
@@ -42,6 +43,7 @@
 
 #include "jni.hpp"
 #include "attach_env.hpp"
+#include "android_renderer_frontend.hpp"
 #include "bitmap.hpp"
 #include "run_loop_impl.hpp"
 #include "java/util.hpp"
@@ -67,12 +69,23 @@ NativeMapView::NativeMapView(jni::JNIEnv& _env,
         return;
     }
 
+    auto& fileSource = mbgl::android::FileSource::getDefaultFileSource(_env, jFileSource);
+
+    // Create a renderer
+    auto renderer = std::make_unique<Renderer>(*this, pixelRatio, fileSource, *threadPool,
+                                               MapMode::Continuous, GLContextMode::Unique,
+                                               jni::Make<std::string>(_env, _programCacheDir));
+
+    // Create a renderer frontend
+    rendererFrontend = std::make_unique<AndroidRendererFrontend>(std::move(renderer),
+                                                                 [this] { this->invalidate(); });
+
     // Create the core map
-    map = std::make_unique<mbgl::Map>(
-        *this, *this, mbgl::Size{ static_cast<uint32_t>(width), static_cast<uint32_t>(height) },
-        pixelRatio, mbgl::android::FileSource::getDefaultFileSource(_env, jFileSource), *threadPool,
-        MapMode::Continuous, GLContextMode::Unique, ConstrainMode::HeightOnly,
-        ViewportMode::Default, jni::Make<std::string>(_env, _programCacheDir));
+    map = std::make_unique<mbgl::Map>(*rendererFrontend, *this,
+                                      mbgl::Size{ static_cast<uint32_t>(width),
+                                                  static_cast<uint32_t>(height) }, pixelRatio,
+                                      fileSource, *threadPool, MapMode::Continuous,
+                                      ConstrainMode::HeightOnly, ViewportMode::Default);
 }
 
 /**
@@ -273,14 +286,14 @@ void NativeMapView::destroySurface(jni::JNIEnv&) {
 }
 
 void NativeMapView::render(jni::JNIEnv& env) {
-    BackendScope guard(*this);
+    BackendScope guard { *this };
 
     if (framebufferSizeChanged) {
         setViewport(0, 0, getFramebufferSize());
         framebufferSizeChanged = false;
     }
 
-    map->render(*this);
+    rendererFrontend->render(*this);
 
     if(snapshot){
          snapshot = false;
@@ -587,7 +600,7 @@ jni::Array<jni::jlong> NativeMapView::addMarkers(jni::JNIEnv& env, jni::Array<jn
 }
 
 void NativeMapView::onLowMemory(JNIEnv&) {
-    map->onLowMemory();
+    rendererFrontend->onLowMemory();
 }
 
 using DebugOptions = mbgl::MapDebugOptions;
