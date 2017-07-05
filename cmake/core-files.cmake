@@ -15,6 +15,7 @@ set(MBGL_CORE_FILES
     src/mbgl/algorithm/generate_clip_ids.hpp
     src/mbgl/algorithm/generate_clip_ids_impl.hpp
     src/mbgl/algorithm/update_renderables.hpp
+    src/mbgl/algorithm/update_stencils.hpp
 
     # annotation
     include/mbgl/annotation/annotation.hpp
