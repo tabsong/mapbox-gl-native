@@ -5,7 +5,7 @@
 #include <mbgl/style/style.hpp>
 
 #include <mbgl/map/mode.hpp>
-#include <mbgl/map/backend.hpp>
+#include <mbgl/renderer/renderer_backend.hpp>
 
 #include <memory>
 #include <string>
@@ -26,7 +26,7 @@ class View;
 
 class Renderer::Impl : public RenderStyleObserver {
 public:
-    Impl(Backend&, float pixelRatio_, FileSource&, Scheduler&, MapMode, GLContextMode,
+    Impl(RendererBackend&, float pixelRatio_, FileSource&, Scheduler&, MapMode, GLContextMode,
          const optional<std::string>);
     ~Impl() final;
 
@@ -48,7 +48,7 @@ public:
 private:
     friend class Renderer;
 
-    Backend& backend;
+    RendererBackend& backend;
 
     RendererObserver* observer;
 

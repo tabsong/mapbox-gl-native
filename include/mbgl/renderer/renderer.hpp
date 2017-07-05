@@ -12,8 +12,8 @@
 
 namespace mbgl {
 
-class Backend;
 class FileSource;
+class RendererBackend;
 class RendererObserver;
 class RenderedQueryOptions;
 class Scheduler;
@@ -23,7 +23,7 @@ class View;
 
 class Renderer {
 public:
-    Renderer(Backend&, float pixelRatio_, FileSource&, Scheduler&, MapMode = MapMode::Continuous,
+    Renderer(RendererBackend&, float pixelRatio_, FileSource&, Scheduler&, MapMode = MapMode::Continuous,
              GLContextMode = GLContextMode::Unique, const optional<std::string> = {});
     ~Renderer();
 

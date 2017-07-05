@@ -23,7 +23,7 @@
 #include <mbgl/sprite/sprite_loader.hpp>
 #include <mbgl/text/glyph_manager.hpp>
 #include <mbgl/geometry/line_atlas.hpp>
-#include <mbgl/map/backend_scope.hpp>
+#include <mbgl/renderer/backend_scope.hpp>
 #include <mbgl/map/query.hpp>
 #include <mbgl/tile/tile.hpp>
 #include <mbgl/util/math.hpp>

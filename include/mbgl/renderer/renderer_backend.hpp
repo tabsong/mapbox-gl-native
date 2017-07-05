@@ -1,7 +1,7 @@
 #pragma once
 
 #include <mbgl/map/view.hpp>
-#include <mbgl/map/backend_scope.hpp>
+#include <mbgl/renderer/backend_scope.hpp>
 #include <mbgl/util/image.hpp>
 #include <mbgl/util/size.hpp>
 
@@ -16,10 +16,10 @@ using ProcAddress = void (*)();
 using FramebufferID = uint32_t;
 } // namespace gl
 
-class Backend {
+class RendererBackend {
 public:
-    Backend();
-    virtual ~Backend();
+    RendererBackend();
+    virtual ~RendererBackend();
 
     // Returns the backend's context which manages OpenGL state.
     gl::Context& getContext();
@@ -32,7 +32,7 @@ public:
     };
 
 protected:
-    // Called with the name of an OpenGL extension that should be loaded. Backend implementations
+    // Called with the name of an OpenGL extension that should be loaded. RendererBackend implementations
     // must call the API-specific version that obtains the function pointer for this function,
     // or a null pointer if unsupported/unavailable.
     virtual gl::ProcAddress initializeExtension(const char*) = 0;

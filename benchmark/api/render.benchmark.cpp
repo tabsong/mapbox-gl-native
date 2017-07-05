@@ -2,10 +2,10 @@
 
 #include <mbgl/benchmark/util.hpp>
 #include <mbgl/map/map.hpp>
-#include <mbgl/map/backend_scope.hpp>
 #include <mbgl/gl/headless_backend.hpp>
 #include <mbgl/gl/offscreen_view.hpp>
 #include <mbgl/util/default_thread_pool.hpp>
+#include <mbgl/renderer/backend_scope.hpp>
 #include <mbgl/style/style.hpp>
 #include <mbgl/style/image.hpp>
 #include <mbgl/storage/default_file_source.hpp>

@@ -4,7 +4,7 @@
 
 namespace mbgl {
 
-Renderer::Renderer(Backend& backend,
+Renderer::Renderer(RendererBackend& backend,
                    float pixelRatio_,
                    FileSource& fileSource_,
                    Scheduler& scheduler_,
