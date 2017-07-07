@@ -370,6 +370,7 @@ set(MBGL_CORE_FILES
     include/mbgl/style/conversion/constant.hpp
     include/mbgl/style/conversion/coordinate.hpp
     include/mbgl/style/conversion/data_driven_property_value.hpp
+    include/mbgl/style/conversion/expression.hpp
     include/mbgl/style/conversion/filter.hpp
     include/mbgl/style/conversion/function.hpp
     include/mbgl/style/conversion/geojson.hpp
@@ -395,11 +396,15 @@ set(MBGL_CORE_FILES
     include/mbgl/style/function/composite_function.hpp
     include/mbgl/style/function/composite_interval_stops.hpp
     include/mbgl/style/function/exponential_stops.hpp
+    include/mbgl/style/function/expression.hpp
     include/mbgl/style/function/identity_stops.hpp
     include/mbgl/style/function/interval_stops.hpp
     include/mbgl/style/function/source_function.hpp
+    include/mbgl/style/function/type.hpp
     src/mbgl/style/function/categorical_stops.cpp
+    src/mbgl/style/function/expression.cpp
     src/mbgl/style/function/identity_stops.cpp
+    src/mbgl/style/function/type.cpp
 
     # style/layers
     include/mbgl/style/layers/background_layer.hpp
@@ -609,8 +614,8 @@ set(MBGL_CORE_FILES
     src/mbgl/util/stopwatch.cpp
     src/mbgl/util/stopwatch.hpp
     src/mbgl/util/string.cpp
-    src/mbgl/util/thread_local.hpp
     src/mbgl/util/thread.hpp
+    src/mbgl/util/thread_local.hpp
     src/mbgl/util/throttler.cpp
     src/mbgl/util/throttler.hpp
     src/mbgl/util/tile_coordinate.hpp
