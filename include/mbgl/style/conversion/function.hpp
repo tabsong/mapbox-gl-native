@@ -3,7 +3,6 @@
 #include <mbgl/style/function/camera_function.hpp>
 #include <mbgl/style/function/source_function.hpp>
 #include <mbgl/style/function/composite_function.hpp>
-#include <mbgl/style/function/expression.hpp>
 #include <mbgl/style/conversion.hpp>
 #include <mbgl/style/conversion/constant.hpp>
 #include <mbgl/util/ignore.hpp>

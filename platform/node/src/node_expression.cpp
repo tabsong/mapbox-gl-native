@@ -1,8 +1,8 @@
-#include "node_expression.hpp"
 #include "node_conversion.hpp"
+#include "node_expression.hpp"
 
-#include <mbgl/style/conversion/geojson.hpp>
 #include <mbgl/style/conversion/expression.hpp>
+#include <mbgl/style/conversion/geojson.hpp>
 #include <mbgl/util/geojson.hpp>
 #include <nan.h>
 
@@ -23,15 +23,15 @@ void NodeExpression::Init(v8::Local<v8::Object> target) {
     Nan::SetPrototypeMethod(tpl, "isFeatureConstant", IsFeatureConstant);
     Nan::SetPrototypeMethod(tpl, "isZoomConstant", IsZoomConstant);
 
+    Nan::SetMethod(tpl, "parse", Parse);
+
     constructor.Reset(tpl->GetFunction()); // what is this doing?
     Nan::Set(target, Nan::New("Expression").ToLocalChecked(), tpl->GetFunction());
 }
 
-void NodeExpression::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
-    if (!info.IsConstructCall()) {
-        return Nan::ThrowTypeError("Use the new operator to create new Expression objects");
-    }
-
+void NodeExpression::Parse(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+    v8::Local<v8::Function> cons = Nan::New(constructor);
+    
     if (info.Length() < 1 || info[0]->IsUndefined()) {
         return Nan::ThrowTypeError("Requires a JSON style expression argument.");
     }
@@ -39,15 +39,35 @@ void NodeExpression::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     auto expr = info[0];
 
     try {
-        conversion::Error error;
-        auto expression = conversion::convert<std::unique_ptr<Expression>>(expr, error);
-        if (!expression) {
-            return Nan::ThrowTypeError(error.message.c_str());
+        auto parsed = parseExpression(expr, ParsingContext());
+        if (parsed.template is<std::unique_ptr<Expression>>()) {
+            auto nodeExpr = new NodeExpression(std::move(parsed.template get<std::unique_ptr<Expression>>()));
+            const int argc = 0;
+            v8::Local<v8::Value> argv[0] = {};
+            auto wrapped = Nan::NewInstance(cons, argc, argv).ToLocalChecked();
+            nodeExpr->Wrap(wrapped);
+            info.GetReturnValue().Set(wrapped);
+        } else {
+            const auto& error = parsed.template get<CompileError>();
+            v8::Local<v8::Object> err = Nan::New<v8::Object>();
+            Nan::Set(err,
+                    Nan::New("key").ToLocalChecked(),
+                    Nan::New(error.key.c_str()).ToLocalChecked());
+            Nan::Set(err,
+                    Nan::New("error").ToLocalChecked(),
+                    Nan::New(error.message.c_str()).ToLocalChecked());
+            v8::Local<v8::Array> result = Nan::New<v8::Array>();
+            Nan::Set(result, Nan::New(0), err);
+            info.GetReturnValue().Set(result);
         }
-        auto nodeExpr = new NodeExpression(std::move(*expression));
-        nodeExpr->Wrap(info.This());
     } catch(std::exception &ex) {
         return Nan::ThrowError(ex.what());
+    }
+}
+
+void NodeExpression::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+    if (!info.IsConstructCall()) {
+        return Nan::ThrowTypeError("Use the new operator to create new Expression objects");
     }
 
     info.GetReturnValue().Set(info.This());
@@ -55,6 +75,7 @@ void NodeExpression::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
 
 void NodeExpression::Evaluate(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     NodeExpression* nodeExpr = ObjectWrap::Unwrap<NodeExpression>(info.Holder());
+    const auto& expression = nodeExpr->expression;
 
     if (info.Length() < 2) {
         return Nan::ThrowTypeError("Requires arguments zoom and feature arguments.");
@@ -75,11 +96,11 @@ void NodeExpression::Evaluate(const Nan::FunctionCallbackInfo<v8::Value>& info) 
         Nan::ThrowTypeError(conversionError.message.c_str());
         return;
     }
-    
+
     try {
         mapbox::geojson::feature feature = geoJSON->get<mapbox::geojson::feature>();
-        Error error;
-        auto result = nodeExpr->expression->evaluate(zoom, feature, error);
+        EvaluationError error;
+        auto result = expression->evaluate(zoom, feature, error);
         if (result) {
             result->match(
                 [&] (const std::array<float, 2>&) {},
@@ -108,19 +129,23 @@ void NodeExpression::Evaluate(const Nan::FunctionCallbackInfo<v8::Value>& info) 
 
 void NodeExpression::GetType(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     NodeExpression* nodeExpr = ObjectWrap::Unwrap<NodeExpression>(info.Holder());
-    const auto& type = nodeExpr->expression->getType();
+    const auto& expression = nodeExpr->expression;
+
+    const auto& type = expression->getType();
     const auto& name = type.match([&] (const auto& t) { return t.getName(); });
     info.GetReturnValue().Set(Nan::New(name.c_str()).ToLocalChecked());
 }
 
 void NodeExpression::IsFeatureConstant(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     NodeExpression* nodeExpr = ObjectWrap::Unwrap<NodeExpression>(info.Holder());
-    info.GetReturnValue().Set(Nan::New(nodeExpr->expression->isFeatureConstant()));
+    const auto& expression = nodeExpr->expression;
+    info.GetReturnValue().Set(Nan::New(expression->isFeatureConstant()));
 }
 
 void NodeExpression::IsZoomConstant(const Nan::FunctionCallbackInfo<v8::Value>& info) {
     NodeExpression* nodeExpr = ObjectWrap::Unwrap<NodeExpression>(info.Holder());
-    info.GetReturnValue().Set(Nan::New(nodeExpr->expression->isZoomConstant()));
+    const auto& expression = nodeExpr->expression;
+    info.GetReturnValue().Set(Nan::New(expression->isZoomConstant()));
 }
 
 } // namespace node_mbgl

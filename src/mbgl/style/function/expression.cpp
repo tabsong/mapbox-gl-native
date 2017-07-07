@@ -1,4 +1,4 @@
-#include <mbgl/style/function/expression.hpp>
+#include <mbgl/style/expression/expression.hpp>
 #include <mbgl/tile/geometry_tile_data.hpp>
 
 namespace mbgl {
@@ -38,7 +38,7 @@ public:
     }
 };
 
-optional<OutputValue> Expression::evaluate(float z, const Feature& feature, Error& error) const {
+optional<OutputValue> Expression::evaluate(float z, const Feature& feature, EvaluationError& error) const {
     std::unique_ptr<const GeometryTileFeature> f = std::make_unique<const GeoJSONFeature>(feature);
     return this->evaluate(z, *f, error);
 }

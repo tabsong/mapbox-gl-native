@@ -2,7 +2,8 @@
 
 #include <exception>
 #include <memory>
-#include <mbgl/style/function/expression.hpp>
+#include <mbgl/style/conversion.hpp>
+#include <mbgl/style/expression/expression.hpp>
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -10,6 +11,7 @@
 #include <nan.h>
 #pragma GCC diagnostic pop
 
+using namespace mbgl::style;
 using namespace mbgl::style::expression;
 
 namespace node_mbgl {
@@ -24,6 +26,7 @@ private:
     {};
 
     static void New(const Nan::FunctionCallbackInfo<v8::Value>&);
+    static void Parse(const Nan::FunctionCallbackInfo<v8::Value>&);
     static void Evaluate(const Nan::FunctionCallbackInfo<v8::Value>&);
     static void GetType(const Nan::FunctionCallbackInfo<v8::Value>&);
     static void IsFeatureConstant(const Nan::FunctionCallbackInfo<v8::Value>&);

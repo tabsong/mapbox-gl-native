@@ -388,6 +388,11 @@ set(MBGL_CORE_FILES
     src/mbgl/style/conversion/json.hpp
     src/mbgl/style/conversion/stringify.hpp
 
+    # style/expression
+    include/mbgl/style/expression/expression.hpp
+    include/mbgl/style/expression/parse.hpp
+    include/mbgl/style/expression/parsing_context.hpp
+
     # style/function
     include/mbgl/style/function/camera_function.hpp
     include/mbgl/style/function/categorical_stops.hpp
@@ -396,7 +401,6 @@ set(MBGL_CORE_FILES
     include/mbgl/style/function/composite_function.hpp
     include/mbgl/style/function/composite_interval_stops.hpp
     include/mbgl/style/function/exponential_stops.hpp
-    include/mbgl/style/function/expression.hpp
     include/mbgl/style/function/identity_stops.hpp
     include/mbgl/style/function/interval_stops.hpp
     include/mbgl/style/function/source_function.hpp

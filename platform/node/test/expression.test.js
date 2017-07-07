@@ -15,13 +15,13 @@ suite.run('native', {tests: tests}, (fixture) => {
         compileResult
     };
 
-    try {
-        const expression = new mbgl.Expression(fixture.expression);
+    const expression = mbgl.Expression.parse(fixture.expression);
+
+    if (expression instanceof mbgl.Expression) {
         compileResult.result = 'success';
         compileResult.isFeatureConstant = expression.isFeatureConstant();
         compileResult.isZoomConstant = expression.isZoomConstant();
         compileResult.type = expression.getType();
-
         if (fixture.evaluate) {
             const evaluateResults = [];
             for (const input of fixture.evaluate) {
@@ -31,7 +31,7 @@ suite.run('native', {tests: tests}, (fixture) => {
                 const feature = Object.assign({
                     type: 'Feature',
                     properties: {},
-                    geometry: { type: 'Unknown', coordinates: [] }
+                    geometry: { type: 'Point', coordinates: [0, 0] }
                 }, input[1])
 
                 const output = expression.evaluate(zoom, feature);
@@ -42,9 +42,9 @@ suite.run('native', {tests: tests}, (fixture) => {
                 testResult.evaluateResults = evaluateResults;
             }
         }
-    } catch (e) {
+    } else {
         compileResult.result = 'error';
-        compileResult.errors = [e.message];
+        compileResult.errors = expression;
     }
 
     return testResult;
