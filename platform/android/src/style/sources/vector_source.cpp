@@ -28,8 +28,8 @@ namespace android {
         ) {
     }
 
-    VectorSource::VectorSource(mbgl::Map& map, mbgl::style::VectorSource& coreSource)
-        : Source(map, coreSource) {
+    VectorSource::VectorSource(mbgl::style::VectorSource& coreSource)
+        : Source(coreSource) {
     }
 
     VectorSource::~VectorSource() = default;
@@ -46,8 +46,8 @@ namespace android {
         using namespace mbgl::android::geojson;
 
         std::vector<mbgl::Feature> features;
-        if (map) {
-            features = map->querySourceFeatures(source.getID(), { toVector(env, jSourceLayerIds), toFilter(env, jfilter) });
+        if (rendererFrontend) {
+            features = rendererFrontend->querySourceFeatures(source.getID(), { toVector(env, jSourceLayerIds), toFilter(env, jfilter) });
         }
         return *convert<jni::Array<jni::Object<Feature>>, std::vector<mbgl::Feature>>(env, features);
     }

@@ -771,7 +771,7 @@ jni::Array<jlong> NativeMapView::queryPointAnnotations(JNIEnv& env, jni::Object<
     };
 
     // Assume only points for now
-    mbgl::AnnotationIDs ids = map->queryPointAnnotations(box);
+    mbgl::AnnotationIDs ids = rendererFrontend->queryPointAnnotations(box);
 
     // Convert result
     std::vector<jlong> longIds(ids.begin(), ids.end());
@@ -793,7 +793,9 @@ jni::Array<jni::Object<geojson::Feature>> NativeMapView::queryRenderedFeaturesFo
     }
     mapbox::geometry::point<double> point = {x, y};
 
-    return *convert<jni::Array<jni::Object<Feature>>, std::vector<mbgl::Feature>>(env, map->queryRenderedFeatures(point, { layers, toFilter(env, jfilter) }));
+    return *convert<jni::Array<jni::Object<Feature>>, std::vector<mbgl::Feature>>(
+            env,
+            rendererFrontend->queryRenderedFeatures(point, { layers, toFilter(env, jfilter) }));
 }
 
 jni::Array<jni::Object<geojson::Feature>> NativeMapView::queryRenderedFeaturesForBox(JNIEnv& env, jni::jfloat left, jni::jfloat top,
@@ -811,7 +813,9 @@ jni::Array<jni::Object<geojson::Feature>> NativeMapView::queryRenderedFeaturesFo
             mapbox::geometry::point<double>{ right, bottom }
     };
 
-    return *convert<jni::Array<jni::Object<Feature>>, std::vector<mbgl::Feature>>(env, map->queryRenderedFeatures(box, { layers, toFilter(env, jfilter) }));
+    return *convert<jni::Array<jni::Object<Feature>>, std::vector<mbgl::Feature>>(
+            env,
+            rendererFrontend->queryRenderedFeatures(box, { layers, toFilter(env, jfilter) }));
 }
 
 jni::Object<Light> NativeMapView::getLight(JNIEnv& env) {
@@ -979,7 +983,7 @@ jni::Array<jni::Object<Source>> NativeMapView::getSources(JNIEnv& env) {
     jni::Array<jni::Object<Source>> jSources = jni::Array<jni::Object<Source>>::New(env, sources.size(), Source::javaClass);
     int index = 0;
     for (auto source : sources) {
-        auto jSource = jni::Object<Source>(createJavaSourcePeer(env, *map, *source));
+        auto jSource = jni::Object<Source>(createJavaSourcePeer(env, *rendererFrontend, *source));
         jSources.Set(env, index, jSource);
         jni::DeleteLocalRef(env, jSource);
         index++;
@@ -997,7 +1001,7 @@ jni::Object<Source> NativeMapView::getSource(JNIEnv& env, jni::String sourceId) 
     }
 
     // Create and return the source's native peer
-    return jni::Object<Source>(createJavaSourcePeer(env, *map, *coreSource));
+    return jni::Object<Source>(createJavaSourcePeer(env, *rendererFrontend, *coreSource));
 }
 
 void NativeMapView::addSource(JNIEnv& env, jni::jlong sourcePtr) {
@@ -1006,6 +1010,7 @@ void NativeMapView::addSource(JNIEnv& env, jni::jlong sourcePtr) {
     Source *source = reinterpret_cast<Source *>(sourcePtr);
     try {
         source->addToMap(*map);
+        source->setRendererFrontend(*rendererFrontend);
     } catch (const std::runtime_error& error) {
         jni::ThrowNew(env, jni::FindClass(env, "com/mapbox/mapboxsdk/style/sources/CannotAddSourceException"), error.what());
     }
@@ -1014,7 +1019,7 @@ void NativeMapView::addSource(JNIEnv& env, jni::jlong sourcePtr) {
 jni::Object<Source> NativeMapView::removeSourceById(JNIEnv& env, jni::String id) {
     std::unique_ptr<mbgl::style::Source> coreSource = map->getStyle().removeSource(jni::Make<std::string>(env, id));
     if (coreSource) {
-        return jni::Object<Source>(createJavaSourcePeer(env, *map, *coreSource));
+        return jni::Object<Source>(createJavaSourcePeer(env, *rendererFrontend, *coreSource));
     } else {
         return jni::Object<Source>();
     }

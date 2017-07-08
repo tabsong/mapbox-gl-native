@@ -1,14 +1,18 @@
 
 #pragma once
 
+#include <mbgl/annotation/annotation.hpp>
 #include <mbgl/renderer/renderer_frontend.hpp>
 #include <mbgl/util/async_task.hpp>
+#include <mbgl/util/geo.hpp>
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 namespace mbgl {
 
+class View;
 class Renderer;
 class View;
 class RenderedQueryOptions;
@@ -28,9 +32,11 @@ public:
     void update(std::shared_ptr<UpdateParameters>) override;
     void render(View& view);
 
-    virtual std::vector<Feature> queryRenderedFeatures(ScreenLineString, RenderedQueryOptions) const override;
-
-    virtual std::vector<Feature> querySourceFeatures(std::string sourceID, SourceQueryOptions) const override;
+    // Feature querying
+    std::vector<Feature> queryRenderedFeatures(const ScreenCoordinate&, const RenderedQueryOptions&) const;
+    std::vector<Feature> queryRenderedFeatures(const ScreenBox&, const RenderedQueryOptions&) const;
+    std::vector<Feature> querySourceFeatures(const std::string& sourceID, const SourceQueryOptions&) const;
+    AnnotationIDs queryPointAnnotations(const ScreenBox& box) const;
 
     // Memory
     void onLowMemory();

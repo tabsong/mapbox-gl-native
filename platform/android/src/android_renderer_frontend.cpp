@@ -18,13 +18,14 @@ AndroidRendererFrontend::AndroidRendererFrontend(
 AndroidRendererFrontend::~AndroidRendererFrontend() = default;
 
 void AndroidRendererFrontend::reset() {
+    assert (renderer);
     if (renderer) {
         renderer.reset();
     }
 }
 
 void AndroidRendererFrontend::setObserver(RendererObserver& observer) {
-    if (!renderer) return;
+    assert (renderer);
     renderer->setObserver(&observer);
 }
 
@@ -34,26 +35,34 @@ void AndroidRendererFrontend::update(std::shared_ptr<UpdateParameters> params) {
 }
 
 void AndroidRendererFrontend::render(View& view) {
-    if (!updateParameters || !renderer) return;
+    assert (renderer);
+    if (!updateParameters) return;
 
     renderer->render(view, *updateParameters);
 }
 
-std::vector<Feature> AndroidRendererFrontend::queryRenderedFeatures(ScreenLineString geometry,
-                                                                    RenderedQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->queryRenderedFeatures(geometry, options);
+void AndroidRendererFrontend::onLowMemory() {
+    assert (renderer);
+    renderer->onLowMemory();
 }
 
-std::vector<Feature> AndroidRendererFrontend::querySourceFeatures(std::string sourceID,
-                                                                  SourceQueryOptions options) const {
-    if (!renderer) return {};
+std::vector<Feature> AndroidRendererFrontend::querySourceFeatures(const std::string& sourceID,
+                                                                  const SourceQueryOptions& options) const {
     return renderer->querySourceFeatures(sourceID, options);
 }
 
-void AndroidRendererFrontend::onLowMemory() {
-    if (!renderer) return;
-    renderer->onLowMemory();
+std::vector<Feature> AndroidRendererFrontend::queryRenderedFeatures(const ScreenBox& box,
+                                                                    const RenderedQueryOptions& options) const {
+    return renderer->queryRenderedFeatures(box, options);
+}
+
+std::vector<Feature> AndroidRendererFrontend::queryRenderedFeatures(const ScreenCoordinate& point,
+                                                                    const RenderedQueryOptions& options) const {
+    return renderer->queryRenderedFeatures(point, options);
+}
+
+AnnotationIDs AndroidRendererFrontend::queryPointAnnotations(const ScreenBox& box) const {
+    return renderer->queryPointAnnotations(box);
 }
 
 } // namespace android
