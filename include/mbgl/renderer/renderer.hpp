@@ -2,7 +2,6 @@
 
 #include <mbgl/map/mode.hpp>
 #include <mbgl/map/query.hpp>
-#include <mbgl/util/feature.hpp>
 #include <mbgl/annotation/annotation.hpp>
 #include <mbgl/util/geo.hpp>
 #include <mbgl/util/geo.hpp>
@@ -26,12 +25,12 @@ class View;
 class Renderer {
 public:
     Renderer(RendererBackend&, float pixelRatio_, FileSource&, Scheduler&, MapMode = MapMode::Continuous,
-             GLContextMode = GLContextMode::Unique, const optional<std::string> = {});
+             GLContextMode = GLContextMode::Unique, const optional<std::string> programCacheDir = {});
     ~Renderer();
 
-    void render(View& view, const UpdateParameters&);
-
     void setObserver(RendererObserver*);
+
+    void render(View& view, const UpdateParameters&);
 
     // Feature queries
     std::vector<Feature> queryRenderedFeatures(const ScreenLineString&, const RenderedQueryOptions&) const;
@@ -40,8 +39,10 @@ public:
     std::vector<Feature> querySourceFeatures(const std::string& sourceID, const SourceQueryOptions&) const;
     AnnotationIDs queryPointAnnotations(const ScreenBox& box) const;
 
+    // Debug
     void dumpDebugLogs();
 
+    // Memory
     void onLowMemory();
 
 private:

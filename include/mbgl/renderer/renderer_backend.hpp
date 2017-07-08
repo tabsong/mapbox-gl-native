@@ -16,6 +16,8 @@ using ProcAddress = void (*)();
 using FramebufferID = uint32_t;
 } // namespace gl
 
+// The RendererBackend is used by the Renderer to facilitate
+// the actual rendering.
 class RendererBackend {
 public:
     RendererBackend();
@@ -27,9 +29,9 @@ public:
     // Called prior to rendering to update the internally assumed OpenGL state.
     virtual void updateAssumedState() = 0;
 
-    inline virtual BackendScope::ScopeType getScopeType() const {
+    virtual BackendScope::ScopeType getScopeType() const {
         return BackendScope::ScopeType::Explicit;
-    };
+    }
 
 protected:
     // Called with the name of an OpenGL extension that should be loaded. RendererBackend implementations
@@ -38,15 +40,13 @@ protected:
     virtual gl::ProcAddress initializeExtension(const char*) = 0;
 
     // Called when the backend's GL context needs to be made active or inactive. These are called,
-    // as a matched pair, in four situations:
+    // as a matched pair, exclusively through BackendScope, in two situations:
     //
-    //   1. When releasing GL resources during Map destruction
-    //   2. When calling a CustomLayerInitializeFunction, during Map::addLayer
-    //   3. When calling a CustomLayerDeinitializeFunction, during Map::removeLayer
-    //   4. When rendering for Map::renderStill
-    //
-    // They are *not* called for Map::render; it is assumed that the correct context is already
-    // activated prior to calling Map::render.
+    //   1. When releasing GL resources during Renderer destruction
+    //      (Including calling CustomLayerDeinitializeFunction during RenderCustomLayer destruction)
+    //   2. When renderering through Renderer::render()
+    //      (Including calling CustomLayerDeinitializeFunction for newly added custom layers and
+    //       CustomLayerDeinitializeFunction on layer removal)
     virtual void activate() = 0;
     virtual void deactivate() = 0;
 
