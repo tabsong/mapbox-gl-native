@@ -631,46 +631,6 @@ void Map::removeAnnotation(AnnotationID annotation) {
     impl->onUpdate(Update::AnnotationData);
 }
 
-#pragma mark - Feature query api
-
-std::vector<Feature> Map::queryRenderedFeatures(const ScreenCoordinate& point, const RenderedQueryOptions& options) {
-    return impl->rendererFrontend.queryRenderedFeatures({ point }, options);
-}
-
-std::vector<Feature> Map::queryRenderedFeatures(const ScreenBox& box, const RenderedQueryOptions& options) {
-    return impl->rendererFrontend.queryRenderedFeatures(
-            {
-                box.min,
-                {box.max.x, box.min.y},
-                box.max,
-                {box.min.x, box.max.y},
-                box.min
-            },
-            options
-    );
-}
-
-std::vector<Feature> Map::querySourceFeatures(const std::string& sourceID, const SourceQueryOptions& options) {
-    return impl->rendererFrontend.querySourceFeatures(sourceID, options);
-}
-
-AnnotationIDs Map::queryPointAnnotations(const ScreenBox& box) {
-    RenderedQueryOptions options;
-    options.layerIDs = {{ AnnotationManager::PointLayerID }};
-    auto features = queryRenderedFeatures(box, options);
-    std::set<AnnotationID> set;
-    for (auto &feature : features) {
-        assert(feature.id);
-        assert(feature.id->is<uint64_t>());
-        assert(feature.id->get<uint64_t>() <= std::numeric_limits<AnnotationID>::max());
-        set.insert(static_cast<AnnotationID>(feature.id->get<uint64_t>()));
-    }
-    AnnotationIDs ids;
-    ids.reserve(set.size());
-    std::move(set.begin(), set.end(), std::back_inserter(ids));
-    return ids;
-}
-
 #pragma mark - Toggles
 
 void Map::setDebug(MapDebugOptions debugOptions) {

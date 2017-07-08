@@ -1,20 +1,10 @@
 #pragma once
 
-#include <mbgl/map/map_observer.hpp>
-#include <mbgl/util/feature.hpp>
-#include <mbgl/util/geo.hpp>
-
-#include <functional>
 #include <memory>
-#include <string>
-#include <vector>
 
 namespace mbgl {
 
-class Renderer;
 class RendererObserver;
-class RenderedQueryOptions;
-class SourceQueryOptions;
 class UpdateParameters;
 
 class RendererFrontend {
@@ -31,10 +21,6 @@ public:
 
     // Coalescing updates is up to the implementer
     virtual void update(std::shared_ptr<UpdateParameters>) = 0;
-
-    virtual std::vector<Feature> queryRenderedFeatures(ScreenLineString, RenderedQueryOptions) const = 0;
-
-    virtual std::vector<Feature> querySourceFeatures(std::string, SourceQueryOptions) const = 0;
 };
 
 } // namespace mbgl

@@ -3,6 +3,8 @@
 #include <mbgl/map/mode.hpp>
 #include <mbgl/map/query.hpp>
 #include <mbgl/util/feature.hpp>
+#include <mbgl/annotation/annotation.hpp>
+#include <mbgl/util/geo.hpp>
 #include <mbgl/util/geo.hpp>
 
 #include <functional>
@@ -31,8 +33,12 @@ public:
 
     void setObserver(RendererObserver*);
 
+    // Feature queries
     std::vector<Feature> queryRenderedFeatures(const ScreenLineString&, const RenderedQueryOptions&) const;
+    std::vector<Feature> queryRenderedFeatures(const ScreenCoordinate& point, const RenderedQueryOptions&) const;
+    std::vector<Feature> queryRenderedFeatures(const ScreenBox& box, const RenderedQueryOptions&) const;
     std::vector<Feature> querySourceFeatures(const std::string& sourceID, const SourceQueryOptions&) const;
+    AnnotationIDs queryPointAnnotations(const ScreenBox& box) const;
 
     void dumpDebugLogs();
 
