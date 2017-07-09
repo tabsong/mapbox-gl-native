@@ -51,7 +51,7 @@ static void API_queryRenderedFeaturesAll(::benchmark::State& state) {
     QueryBenchmark bench;
 
     while (state.KeepRunning()) {
-        bench.map.queryRenderedFeatures(bench.box);
+        bench.rendererFrontend.getRenderer()->queryRenderedFeatures(bench.box);
     }
 }
 
@@ -59,7 +59,7 @@ static void API_queryRenderedFeaturesLayerFromLowDensity(::benchmark::State& sta
     QueryBenchmark bench;
 
     while (state.KeepRunning()) {
-        bench.map.queryRenderedFeatures(bench.box, {{{ "testlayer" }}, {}});
+        bench.rendererFrontend.getRenderer()->queryRenderedFeatures(bench.box, {{{ "testlayer" }}, {}});
     }
 }
 
@@ -67,7 +67,7 @@ static void API_queryRenderedFeaturesLayerFromHighDensity(::benchmark::State& st
     QueryBenchmark bench;
 
     while (state.KeepRunning()) {
-        bench.map.queryRenderedFeatures(bench.box, {{{"road-street" }}, {}});
+        bench.rendererFrontend.getRenderer()->queryRenderedFeatures(bench.box, {{{"road-street" }}, {}});
     }
 }
 
