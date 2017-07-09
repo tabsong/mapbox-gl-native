@@ -648,6 +648,10 @@ public:
     return _mbglMap;
 }
 
+- (mbgl::Renderer *)renderer {
+    return _rendererFrontend->getRenderer();
+}
+
 #pragma mark View hierarchy and drawing
 
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow {
@@ -2126,7 +2130,7 @@ public:
 /// Returns the tags of the annotations coincident with the given rectangle.
 - (std::vector<MGLAnnotationTag>)annotationTagsInRect:(NSRect)rect {
     // Cocoa origin is at the lower-left corner.
-    return _mbglMap->queryPointAnnotations({
+    return self.renderer->queryPointAnnotations({
         { NSMinX(rect), NSHeight(self.bounds) - NSMaxY(rect) },
         { NSMaxX(rect), NSHeight(self.bounds) - NSMinY(rect) },
     });
@@ -2547,7 +2551,7 @@ public:
         optionalFilter = predicate.mgl_filter;
     }
     
-    std::vector<mbgl::Feature> features = _mbglMap->queryRenderedFeatures(screenCoordinate, { optionalLayerIDs, optionalFilter });
+    std::vector<mbgl::Feature> features = _rendererFrontend->getRenderer()->queryRenderedFeatures(screenCoordinate, { optionalLayerIDs, optionalFilter });
     return MGLFeaturesFromMBGLFeatures(features);
 }
 
@@ -2581,7 +2585,7 @@ public:
         optionalFilter = predicate.mgl_filter;
     }
     
-    std::vector<mbgl::Feature> features = _mbglMap->queryRenderedFeatures(screenBox, { optionalLayerIDs, optionalFilter });
+    std::vector<mbgl::Feature> features = _rendererFrontend->getRenderer()->queryRenderedFeatures(screenBox, { optionalLayerIDs, optionalFilter });
     return MGLFeaturesFromMBGLFeatures(features);
 }
 

@@ -24,28 +24,21 @@ public:
     void update(std::shared_ptr<mbgl::UpdateParameters> updateParameters_) override {
         updateParameters = std::move(updateParameters_);
         [nativeView setNeedsGLDisplay];
-    };
-    
-    std::vector<mbgl::Feature> queryRenderedFeatures(mbgl::ScreenLineString geometry, mbgl::RenderedQueryOptions options) const override  {
-        if (!renderer)  return {};
-        return renderer->queryRenderedFeatures(geometry, options);
-    };
-    
-    std::vector<mbgl::Feature> querySourceFeatures(std::string sourceID, mbgl::SourceQueryOptions options) const override  {
-        if (!renderer)  return {};
-        return renderer->querySourceFeatures(sourceID, options);
-        
-    };
+    }
     
     void setObserver(mbgl::RendererObserver& observer) override {
         if (!renderer) return;
         renderer->setObserver(&observer);
-    };
+    }
     
     void render() {
         if (!renderer || !updateParameters) return;
         
         renderer->render(*mbglView, *updateParameters);
+    }
+    
+    mbgl::Renderer* getRenderer() {
+        return renderer.get();
     }
     
     void onLowMemory() {

@@ -414,6 +414,11 @@ public:
     return _mbglMap;
 }
 
+- (mbgl::Renderer *)renderer
+{
+    return _rendererFrontend->getRenderer();
+}
+
 - (void)commonInit
 {
     _isTargetingInterfaceBuilder = NSProcessInfo.processInfo.mgl_isInterfaceBuilderDesignablesAgent;
@@ -3711,7 +3716,7 @@ public:
 /// Returns the tags of the annotations coincident with the given rectangle.
 - (std::vector<MGLAnnotationTag>)annotationTagsInRect:(CGRect)rect
 {
-    return _mbglMap->queryPointAnnotations({
+    return _rendererFrontend->getRenderer()->queryPointAnnotations({
         { CGRectGetMinX(rect), CGRectGetMinY(rect) },
         { CGRectGetMaxX(rect), CGRectGetMaxY(rect) },
     });
@@ -4711,7 +4716,7 @@ public:
         optionalFilter = predicate.mgl_filter;
     }
 
-    std::vector<mbgl::Feature> features = _mbglMap->queryRenderedFeatures(screenCoordinate, { optionalLayerIDs, optionalFilter });
+    std::vector<mbgl::Feature> features = _rendererFrontend->getRenderer()->queryRenderedFeatures(screenCoordinate, { optionalLayerIDs, optionalFilter });
     return MGLFeaturesFromMBGLFeatures(features);
 }
 
@@ -4744,7 +4749,7 @@ public:
         optionalFilter = predicate.mgl_filter;
     }
 
-    std::vector<mbgl::Feature> features = _mbglMap->queryRenderedFeatures(screenBox, { optionalLayerIDs, optionalFilter });
+    std::vector<mbgl::Feature> features = _rendererFrontend->getRenderer()->queryRenderedFeatures(screenBox, { optionalLayerIDs, optionalFilter });
     return MGLFeaturesFromMBGLFeatures(features);
 }
 
