@@ -3,9 +3,16 @@
 #include <mbgl/renderer/renderer_backend.hpp>
 #include <mbgl/renderer/renderer_frontend.hpp>
 #include <mbgl/util/async_task.hpp>
+#include <mbgl/util/feature.hpp>
+#include <mbgl/util/geo.hpp>
+#include <mbgl/map/query.hpp>
 
 #include <functional>
 #include <memory>
+
+namespace mbgl {
+    class Renderer;
+} //  namespace mbgl
 
 namespace node_mbgl {
 
@@ -22,9 +29,11 @@ public:
 
     void update(std::shared_ptr<mbgl::UpdateParameters>) override;
     
-    std::vector<mbgl::Feature> queryRenderedFeatures(mbgl::ScreenLineString, mbgl::RenderedQueryOptions) const override;
-    
-    std::vector<mbgl::Feature> querySourceFeatures(std::string, mbgl::SourceQueryOptions) const override;
+    // Feature querying
+    std::vector<mbgl::Feature> queryRenderedFeatures(const mbgl::ScreenCoordinate&,
+                                                     const mbgl::RenderedQueryOptions& options = {}) const;
+    std::vector<mbgl::Feature> queryRenderedFeatures(const mbgl::ScreenBox&,
+                                                     const mbgl::RenderedQueryOptions& = {}) const;
 
     void dumpDebugLogs();
 

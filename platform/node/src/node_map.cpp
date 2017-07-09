@@ -959,7 +959,7 @@ void NodeMap::QueryRenderedFeatures(const Nan::FunctionCallbackInfo<v8::Value>& 
             auto pos0 = Nan::Get(posOrBox, 0).ToLocalChecked().As<v8::Array>();
             auto pos1 = Nan::Get(posOrBox, 1).ToLocalChecked().As<v8::Array>();
 
-            optional = nodeMap->map->queryRenderedFeatures(mbgl::ScreenBox {
+            optional = nodeMap->rendererFrontend->queryRenderedFeatures(mbgl::ScreenBox {
                 {
                     Nan::Get(pos0, 0).ToLocalChecked()->NumberValue(),
                     Nan::Get(pos0, 1).ToLocalChecked()->NumberValue()
@@ -970,7 +970,7 @@ void NodeMap::QueryRenderedFeatures(const Nan::FunctionCallbackInfo<v8::Value>& 
             },  queryOptions);
 
         } else {
-            optional = nodeMap->map->queryRenderedFeatures(mbgl::ScreenCoordinate {
+            optional = nodeMap->rendererFrontend->queryRenderedFeatures(mbgl::ScreenCoordinate {
                 Nan::Get(posOrBox, 0).ToLocalChecked()->NumberValue(),
                 Nan::Get(posOrBox, 1).ToLocalChecked()->NumberValue()
             }, queryOptions);

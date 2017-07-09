@@ -30,15 +30,15 @@ void NodeRendererFrontend::update(std::shared_ptr<mbgl::UpdateParameters> update
     updateParameters = updateParameters_;
     asyncInvalidate.send();
 }
-
-std::vector<mbgl::Feature> NodeRendererFrontend::queryRenderedFeatures(mbgl::ScreenLineString geometry, mbgl::RenderedQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->queryRenderedFeatures(std::move(geometry), std::move(options));
+    
+std::vector<mbgl::Feature> NodeRendererFrontend::queryRenderedFeatures(const mbgl::ScreenBox& box,
+                                                                       const mbgl::RenderedQueryOptions& options) const {
+    return renderer->queryRenderedFeatures(box, options);
 }
 
-std::vector<mbgl::Feature> NodeRendererFrontend::querySourceFeatures(std::string sourceID, mbgl::SourceQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->querySourceFeatures(std::move(sourceID), std::move(options));
+std::vector<mbgl::Feature> NodeRendererFrontend::queryRenderedFeatures(const mbgl::ScreenCoordinate& point,
+                                                                       const mbgl::RenderedQueryOptions& options) const {
+    return renderer->queryRenderedFeatures(point, options);
 }
 
 void NodeRendererFrontend::dumpDebugLogs() {
