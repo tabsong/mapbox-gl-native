@@ -8,6 +8,8 @@
 #include <vector>
 
 namespace mbgl {
+    
+class Renderer;
 
 // Default implementation for RendererFrontend
 class AsyncRendererFrontend : public mbgl::RendererFrontend {
@@ -18,11 +20,10 @@ public:
     void reset() override;
 
     void update(std::shared_ptr<UpdateParameters> updateParameters_) override;
-
-    std::vector<Feature> queryRenderedFeatures(ScreenLineString, RenderedQueryOptions) const override;
-    std::vector<Feature> querySourceFeatures(std::string sourceID, SourceQueryOptions) const override;
     
     void setObserver(RendererObserver& observer_) override;
+    
+    Renderer* getRenderer();
     
 private:
     std::unique_ptr<Renderer> renderer;

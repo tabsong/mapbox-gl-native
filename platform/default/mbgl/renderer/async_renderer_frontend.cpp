@@ -16,7 +16,7 @@ AsyncRendererFrontend::AsyncRendererFrontend(std::unique_ptr<Renderer> renderer_
 AsyncRendererFrontend::~AsyncRendererFrontend() = default;
 
 void AsyncRendererFrontend::reset() {
-    if (!renderer) return;
+    assert(renderer);
     renderer.reset();
 }
 
@@ -25,19 +25,14 @@ void AsyncRendererFrontend::update(std::shared_ptr<UpdateParameters> updateParam
     asyncInvalidate.send();
 }
 
-std::vector<Feature> AsyncRendererFrontend::queryRenderedFeatures(ScreenLineString geometry, RenderedQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->queryRenderedFeatures(geometry, options);
-}
-
-std::vector<Feature> AsyncRendererFrontend::querySourceFeatures(std::string sourceID, SourceQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->querySourceFeatures(sourceID, options);
-}
-
 void AsyncRendererFrontend::setObserver(RendererObserver& observer_) {
-    if (!renderer) return;
+    assert(renderer);
     renderer->setObserver(&observer_);
+}
+    
+Renderer* AsyncRendererFrontend::getRenderer() {
+    assert(renderer);
+    return renderer.get();
 }
 
 } // namespace mbgl
