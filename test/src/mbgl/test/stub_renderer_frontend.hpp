@@ -3,12 +3,16 @@
 
 #include <mbgl/renderer/renderer_frontend.hpp>
 #include <mbgl/util/async_task.hpp>
+#include <mbgl/util/geo.hpp>
+#include <mbgl/util/feature.hpp>
 
 #include <functional>
 #include <memory>
+#include <mbgl/map/query.hpp>
 
 namespace mbgl {
 
+class Renderer;
 class View;
 
 class StubRendererFrontend : public RendererFrontend {
@@ -29,8 +33,7 @@ public:
     void update(std::shared_ptr<UpdateParameters>) override;
     void render(View& view);
 
-    std::vector<Feature> queryRenderedFeatures(ScreenLineString, RenderedQueryOptions) const override;
-    std::vector<Feature> querySourceFeatures(std::string sourceID, SourceQueryOptions) const override;
+    Renderer* getRenderer();
 
 private:
     std::unique_ptr<Renderer> renderer;

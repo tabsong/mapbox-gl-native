@@ -33,10 +33,10 @@ public:
     void render(View& view, const UpdateParameters&);
 
     // Feature queries
-    std::vector<Feature> queryRenderedFeatures(const ScreenLineString&, const RenderedQueryOptions&) const;
-    std::vector<Feature> queryRenderedFeatures(const ScreenCoordinate& point, const RenderedQueryOptions&) const;
-    std::vector<Feature> queryRenderedFeatures(const ScreenBox& box, const RenderedQueryOptions&) const;
-    std::vector<Feature> querySourceFeatures(const std::string& sourceID, const SourceQueryOptions&) const;
+    std::vector<Feature> queryRenderedFeatures(const ScreenLineString&, const RenderedQueryOptions& options = {}) const;
+    std::vector<Feature> queryRenderedFeatures(const ScreenCoordinate& point, const RenderedQueryOptions& options = {}) const;
+    std::vector<Feature> queryRenderedFeatures(const ScreenBox& box, const RenderedQueryOptions& options = {}) const;
+    std::vector<Feature> querySourceFeatures(const std::string& sourceID, const SourceQueryOptions& options = {}) const;
     AnnotationIDs queryPointAnnotations(const ScreenBox& box) const;
 
     // Debug
