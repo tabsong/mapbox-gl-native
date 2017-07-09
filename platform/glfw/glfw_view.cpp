@@ -12,6 +12,7 @@
 #include <mbgl/util/string.hpp>
 #include <mbgl/util/chrono.hpp>
 #include <mbgl/renderer/backend_scope.hpp>
+#include <mbgl/renderer/renderer.hpp>
 #include <mbgl/map/camera.hpp>
 
 #include <mapbox/cheap_ruler.hpp>
@@ -201,7 +202,7 @@ void GLFWView::onKey(GLFWwindow *window, int key, int /*scancode*/, int action, 
             view->nextOrientation();
             break;
         case GLFW_KEY_Q: {
-            auto result = view->map->queryPointAnnotations({ {}, { double(view->getSize().width), double(view->getSize().height) } });
+            auto result = view->rendererFrontend->getRenderer()->queryPointAnnotations({ {}, { double(view->getSize().width), double(view->getSize().height) } });
             printf("visible point annotations: %lu\n", result.size());
         } break;
         case GLFW_KEY_P:

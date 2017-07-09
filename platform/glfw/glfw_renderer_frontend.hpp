@@ -19,9 +19,8 @@ public:
 
     void update(std::shared_ptr<mbgl::UpdateParameters>) override;
     void render();
-
-    std::vector<mbgl::Feature> queryRenderedFeatures(mbgl::ScreenLineString, mbgl::RenderedQueryOptions) const override;
-    std::vector<mbgl::Feature> querySourceFeatures(std::string sourceID, mbgl::SourceQueryOptions) const override;
+    
+    mbgl::Renderer* getRenderer();
 
 private:
     GLFWView& glfwView;

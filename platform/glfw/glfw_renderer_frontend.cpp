@@ -11,13 +11,12 @@ GLFWRendererFrontend::GLFWRendererFrontend(std::unique_ptr<mbgl::Renderer> rende
 GLFWRendererFrontend::~GLFWRendererFrontend() = default;
 
 void GLFWRendererFrontend::reset() {
-    if (renderer) {
-        renderer.reset();
-    }
+    assert(renderer);
+    renderer.reset();
 }
 
 void GLFWRendererFrontend::setObserver(mbgl::RendererObserver& observer) {
-    if (!renderer) return;
+    assert(renderer);
     renderer->setObserver(&observer);
 }
 
@@ -27,17 +26,14 @@ void GLFWRendererFrontend::update(std::shared_ptr<mbgl::UpdateParameters> params
 }
 
 void GLFWRendererFrontend::render() {
-    if (!renderer || !updateParameters) return;
+    assert(renderer);
+    
+    if (!updateParameters) return;
 
     renderer->render(glfwView, *updateParameters);
 }
 
-std::vector<mbgl::Feature> GLFWRendererFrontend::queryRenderedFeatures(mbgl::ScreenLineString geometry, mbgl::RenderedQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->queryRenderedFeatures(geometry, options);
-}
-
-std::vector<mbgl::Feature> GLFWRendererFrontend::querySourceFeatures(std::string sourceID, mbgl::SourceQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->querySourceFeatures(sourceID, options);
+mbgl::Renderer* GLFWRendererFrontend::getRenderer() {
+    assert(renderer);
+    return renderer.get();
 }
