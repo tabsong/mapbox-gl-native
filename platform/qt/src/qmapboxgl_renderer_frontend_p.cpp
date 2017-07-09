@@ -21,16 +21,6 @@ void QMapboxGLRendererFrontend::update(std::shared_ptr<mbgl::UpdateParameters> u
     emit updated();
 }
 
-std::vector<mbgl::Feature> QMapboxGLRendererFrontend::queryRenderedFeatures(mbgl::ScreenLineString geometry, mbgl::RenderedQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->queryRenderedFeatures(geometry, options);
-}
-
-std::vector<mbgl::Feature> QMapboxGLRendererFrontend::querySourceFeatures(std::string sourceId, mbgl::SourceQueryOptions options) const {
-    if (!renderer) return {};
-    return renderer->querySourceFeatures(sourceId, options);
-}
-
 void QMapboxGLRendererFrontend::setObserver(mbgl::RendererObserver& observer_) {
     if (!renderer) return;
     renderer->setObserver(&observer_);

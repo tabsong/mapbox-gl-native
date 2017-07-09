@@ -6,6 +6,7 @@
 
 namespace mbgl {
     class View;
+    class Renderer;
 } // namespace mbgl
 
 class QMapboxGLRendererFrontend : public QObject, public mbgl::RendererFrontend
@@ -20,9 +21,6 @@ public:
     void setObserver(mbgl::RendererObserver&) override;
 
     void update(std::shared_ptr<mbgl::UpdateParameters>) override;
-    
-    std::vector<mbgl::Feature> queryRenderedFeatures(mbgl::ScreenLineString, mbgl::RenderedQueryOptions) const override;
-    std::vector<mbgl::Feature> querySourceFeatures(std::string sourceID, mbgl::SourceQueryOptions) const override;
 
 public slots:
     void render();
