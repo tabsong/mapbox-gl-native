@@ -433,6 +433,7 @@ public:
     self.clipsToBounds = YES;
 
     // setup mbgl view
+    // iOS 平台的View 适配层.
     _mbglView = new MBGLView(self);
 
     // Delete the pre-offline ambient cache at ~/Library/Caches/cache.db.
