@@ -220,10 +220,12 @@ void Map::Impl::render(View& view) {
 
     transform.updateTransitions(timePoint);
 
+    // 更新annotation 样式.
     if (style->impl->loaded && updateFlags & Update::AnnotationStyle) {
         annotationManager.updateStyle(*style->impl);
     }
 
+    // 更新annotation 数据.
     if (updateFlags & Update::AnnotationData) {
         annotationManager.updateData();
     }

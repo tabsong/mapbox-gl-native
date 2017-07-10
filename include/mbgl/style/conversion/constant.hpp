@@ -14,6 +14,7 @@ namespace mbgl {
 namespace style {
 namespace conversion {
 
+// 全特化的模版.
 template <>
 struct Converter<bool> {
     template <class V>

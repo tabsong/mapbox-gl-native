@@ -39,6 +39,7 @@ StyleParseResult Parser::parse(const std::string& json) {
         return std::make_exception_ptr(std::runtime_error("style must be an object"));
     }
 
+    // 解析版本号, 目前只支持version == 8 的版本.
     if (document.HasMember("version")) {
         const JSValue& versionValue = document["version"];
         const int version = versionValue.IsNumber() ? versionValue.GetInt() : 0;
@@ -47,6 +48,7 @@ StyleParseResult Parser::parse(const std::string& json) {
         }
     }
 
+    // 解析style 的名称.
     if (document.HasMember("name")) {
         const JSValue& value = document["name"];
         if (value.IsString()) {
@@ -54,6 +56,7 @@ StyleParseResult Parser::parse(const std::string& json) {
         }
     }
 
+    // 地图中心点.
     if (document.HasMember("center")) {
         const JSValue& value = document["center"];
         conversion::Error error;
@@ -65,6 +68,7 @@ StyleParseResult Parser::parse(const std::string& json) {
         }
     }
 
+    // 缩放级别.
     if (document.HasMember("zoom")) {
         const JSValue& value = document["zoom"];
         if (value.IsNumber()) {
@@ -72,6 +76,7 @@ StyleParseResult Parser::parse(const std::string& json) {
         }
     }
 
+    // 旋转角度.
     if (document.HasMember("bearing")) {
         const JSValue& value = document["bearing"];
         if (value.IsNumber()) {
@@ -79,6 +84,7 @@ StyleParseResult Parser::parse(const std::string& json) {
         }
     }
 
+    // 俯视角度.
     if (document.HasMember("pitch")) {
         const JSValue& value = document["pitch"];
         if (value.IsNumber()) {
@@ -86,10 +92,12 @@ StyleParseResult Parser::parse(const std::string& json) {
         }
     }
 
+    // 目前测试中没有遇到.
     if (document.HasMember("transition")) {
         parseTransition(document["transition"]);
     }
 
+    // 目前测试中没有遇到.
     if (document.HasMember("light")) {
         parseLight(document["light"]);
     }
@@ -101,7 +109,10 @@ StyleParseResult Parser::parse(const std::string& json) {
     if (document.HasMember("layers")) {
         parseLayers(document["layers"]);
     }
+    
+    // style 中的metadata 是专门给研发人员测试使用的。无需解析.
 
+    // Sprite 的链接地址.
     if (document.HasMember("sprite")) {
         const JSValue& sprite = document["sprite"];
         if (sprite.IsString()) {
@@ -109,6 +120,7 @@ StyleParseResult Parser::parse(const std::string& json) {
         }
     }
 
+    // 字体的链接地址.
     if (document.HasMember("glyphs")) {
         const JSValue& glyphs = document["glyphs"];
         if (glyphs.IsString()) {
