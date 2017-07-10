@@ -24,6 +24,8 @@
 	<string>7877</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MGLMapboxAccessToken</key>
+	<string>pk.eyJ1IjoidGFic29uZyIsImEiOiJJblRUY3BVIn0.GMcm4ayfVk81raUlL8y9gw</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2014–2017 Mapbox</string>
 	<key>NSLocationAlwaysUsageDescription</key>
