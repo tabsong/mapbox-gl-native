@@ -211,6 +211,9 @@ void Map::render(View& view) {
 }
 
 void Map::Impl::render(View& view) {
+    
+    // chrono 是boost 的库
+    // 参考: http://www.cnblogs.com/jwk000/p/3560086.html
     TimePoint timePoint = mode == MapMode::Continuous
         ? Clock::now()
         : Clock::time_point::max();

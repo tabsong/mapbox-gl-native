@@ -552,6 +552,8 @@ void Transform::startTransition(const CameraOptions& camera,
     transitionStart = Clock::now();
     transitionDuration = duration;
 
+    // lambda 表达式
+    // 参考: https://msdn.microsoft.com/zh-cn/library/dd293608.aspx
     transitionFrameFn = [isAnimated, animation, frame, anchor, anchorLatLng, this](const TimePoint now) {
         float t = isAnimated ? (std::chrono::duration<float>(now - transitionStart) / transitionDuration) : 1.0;
         if (t >= 1.0) {
